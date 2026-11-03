@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Mcp;
 
-use App\Services\Mcp\McpService;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Console\Command;
 
 class WeatherQuery extends Command
@@ -12,13 +12,31 @@ class WeatherQuery extends Command
 
     public function handle(): int
     {
-        $result = McpService::call('weather', [
-            'latitude'  => $this->argument('lat'),
-            'longitude' => $this->argument('lng'),
-            'current'   => 'temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m',
-            'daily'     => 'temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code',
-            'timezone'  => 'auto',
-        ]);
+         = config("mcp.drivers.weather");
+        if (empty()) { ->error('Driver not found: weather'); return self::FAILURE; }
+         = [];
+         = ['api_key'] ?? '';
+        if (!empty()) {
+             = match(['auth_type'] ?? 'none') {
+                'bearer' => ['Authorization' => "Bearer {}"],
+                'header' => [['header_name'] ?? 'X-Api-Key' => ],
+                default  => [],
+            };
+        }
+         = ['header_string'] ?? '';
+        if (!empty()) {
+            foreach (explode("
+", ) as ) {
+                 = trim();
+                if (empty()) continue;
+                 = strpos(, ':');
+                if ( !== false) {
+                    [trim(substr(, 0, ))] = trim(substr(,  + 1));
+                }
+            }
+        }
+         = Http::withHeaders()->get(['endpoint'], ['lat' => ->argument('lat'), 'lon' => ->argument('lng')]);
+         = ['service' => 'weather', 'data' => ->json()];;
 
         $this->line(json_encode($result, JSON_PRETTY_PRINT));
         return self::SUCCESS;

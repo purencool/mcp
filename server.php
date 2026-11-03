@@ -147,7 +147,10 @@ switch ($command) {
         break;
 
     case "web-fetch":
-        Artisan::call("mcp:web-fetch", ["query" => $query, "--json" => true]);
+        $args = ["query" => $query, "--json" => true];
+        if ($driver) $args["--save"] = $driver;
+        if ($arg4) $args["--save-json"] = $arg4;
+        Artisan::call("mcp:web-fetch", $args);
         break;
 
     case "git":

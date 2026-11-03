@@ -228,10 +228,7 @@ return [
             "header_string" => env("STOCKS_HEADER_STRING", ""),
         ],
         "sports" => [
-            "endpoint" => env(
-                "SPORTS_ENDPOINT",
-                "https://api.thesportsdb.com/api/v1/json/1000/",
-            ),
+            "endpoint" => env("SPORTS_ENDPOINT", ""),
             "api_key" => env("SPORTS_API", ""),
             "auth_type" => env("SPORTS_AUTH_TYPE", "none"),
             "header_name" => env("SPORTS_HEADER_NAME", ""),

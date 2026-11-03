@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Mcp;
 
-use App\Services\Mcp\McpService;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Console\Command;
 
 class CryptoQuery extends Command
@@ -12,10 +12,31 @@ class CryptoQuery extends Command
 
     public function handle(): int
     {
-        $result = McpService::call('crypto', [
-            'ids'   => $this->argument('coins'),
-            'vs_currencies' => $this->option('vs-currency'),
-        ]);
+         = config("mcp.drivers.crypto");
+        if (empty()) { ->error('Driver not found: crypto'); return self::FAILURE; }
+         = [];
+         = ['api_key'] ?? '';
+        if (!empty()) {
+             = match(['auth_type'] ?? 'none') {
+                'bearer' => ['Authorization' => "Bearer {}"],
+                'header' => [['header_name'] ?? 'X-Api-Key' => ],
+                default  => [],
+            };
+        }
+         = ['header_string'] ?? '';
+        if (!empty()) {
+            foreach (explode("
+", ) as ) {
+                 = trim();
+                if (empty()) continue;
+                 = strpos(, ':');
+                if ( !== false) {
+                    [trim(substr(, 0, ))] = trim(substr(,  + 1));
+                }
+            }
+        }
+         = Http::withHeaders()->get(['endpoint'], ['ids' => ->argument('coins'), 'vs_currencies' => ->option('vs-currency') ?: 'aud']);
+         = ['service' => 'crypto', 'data' => ->json()];;
 
         $this->line(json_encode($result, JSON_PRETTY_PRINT));
         return self::SUCCESS;

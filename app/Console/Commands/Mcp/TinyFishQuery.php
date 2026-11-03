@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Mcp;
 
-use App\Services\Mcp\McpService;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Console\Command;
 
 class TinyFishQuery extends Command
