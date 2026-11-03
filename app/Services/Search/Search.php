@@ -11,18 +11,25 @@ class Search implements Searchable
 
     public function search(string $query): array
     {
-        $config = config("search.drivers.{$this->driverName}");
+        $config = config("mcp.drivers.{$this->driverName}"); // ← was "search.drivers"
 
-        // Build query params
-        $params = ["q" => $query];
+        if (empty($config)) {
+            return [
+                "driver" => $this->driverName,
+                "query" => $query,
+                "error" => "Driver '{$this->driverName}' not found in config/mcp.php",
+            ];
+        }
+
+        $paramName = $config["query_param"] ?? "q";
+        $params = [$paramName => $query];
+
         foreach ($config["params"] ?? [] as $param) {
             [$key, $value] = array_pad(explode("=", $param, 2), 2, "");
             $params[$key] = $value;
         }
 
-        // Apply auth based on type
         $request = Http::withHeaders($this->buildHeaders($config));
-
         $response = $request->get($config["endpoint"], $params);
         $data = $response->json();
 
